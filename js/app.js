@@ -56,5 +56,54 @@
     }
   };
 
-  // ADD YOUR CODE HERE
+  // event.preventDefault(); - prevents default actions.
+
+  var $submitBtn = $('button');
+  var newMovie = $("input");
+  var movieObj = {};
+
+  $submitBtn.on('click', function(event) {
+    event.preventDefault();
+    movies = [];
+    renderMovies();
+    var movieName = newMovie.val();
+    if(newMovie.val().length < 1) {
+      alert('You did not enter a valid movie name!');
+    }
+    else {
+      grabMovieData(movieName);
+    }
+  });
+
+  function grabMovieData(movieName) {
+    var $xhr = $.getJSON("https://www.omdbapi.com/?s=" + movieName);
+
+    $xhr.done(function(data) {
+      var movieData = data.Search;
+  		if ($xhr.status !== 200) {
+  			return;
+  		}
+      for(var i = 0; i < movieData.length; i++) {
+        movieObj = {};
+        movieObj.id = movieData[i].imdbID;
+        movieObj.poster = movieData[i].Poster;
+        movieObj.title = movieData[i].Title;
+        movieObj.year = movieData[i].Year;
+        // movieObj.plot = new Promise(grabPlot(movieObj.id));
+        movies.push(movieObj);
+      }
+      console.log(movies);
+      renderMovies();
+    });
+  }
+
+  // function grabPlot(id) {
+  //   var $xhr = $.getJSON('https://www.omdbapi.com/?i=' + id + '&plot=full');
+  //
+  //   $xhr.done(function (data) {
+  //     console.log(data.Plot);
+  //     return data.Plot;
+  //   });
+  // }
+
 })();
